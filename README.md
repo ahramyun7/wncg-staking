@@ -1,0 +1,2 @@
+# wncg-staking
+wncg staking

@@ -3,6 +3,7 @@ pragma solidity ^0.8.2;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
+/// @dev this ERC20Token contract is ONLY for unit tests
 contract ERC20Token is ERC20{
     constructor() ERC20("ERC20Token", "ERC"){
     }

@@ -1,1 +1,12 @@
 .DS_Store
+contracts/.DS_Store
+contracts/node_modules
+contracts/.env
+contracts/.env_prod
+contracts/.env_kovan
+contracts/.openzeppelin
+contracts/coverage
+contracts/coverage.json
+contracts/typechain
+contracts/cache
+contracts/artifacts

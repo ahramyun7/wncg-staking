@@ -93,6 +93,9 @@ contract StakingRewards is Initializable {
   /// @notice Address of BAL Reward pool
   address public BAL_REWARD_POOL;
 
+  /// @notice To pause staking
+  bool public PAUSE_STAKING;
+
   /* ========== EVENTS ========== */
   event FeesUpdated(uint128 _earmarkIncentive, uint128 _operationFee);
   event EmissionPerSecondUpdated(uint128 _emissionPerSecond);
@@ -115,6 +118,7 @@ contract StakingRewards is Initializable {
   event BALRewardPool_Staked(address indexed _user, uint256 _amount);
   event BALRewardPool_Unstaked(address indexed _user, uint256 _amount);
   event EarmarkRewards(address indexed _user, uint256 _balReward);
+  event PauseStakingUpdated(bool _pauseStaking);
  
   /* ========== INITIALIZE ========== */
   function initialize(
@@ -138,6 +142,7 @@ contract StakingRewards is Initializable {
 
     COOLDOWN_SECONDS = TWO_WEEKS;
     UNSTAKE_WINDOW = THREE_DAYS;
+    PAUSE_STAKING = false;
 
     assetData.emissionPerSecond = 0;
     earmarkIncentive = 100;
@@ -250,10 +255,22 @@ contract StakingRewards is Initializable {
   }
 
   /**
+   * @dev To change PAUSE_STAKING boolean value
+   * @param _pauseStaking boolean value to pause staking
+   */
+  function changePauseStaking(
+    bool _pauseStaking
+  ) external onlyOperator {
+    PAUSE_STAKING = _pauseStaking;
+    emit PauseStakingUpdated(_pauseStaking);
+  }
+
+  /**
    * @dev Stake tokens, and earn rewards
    * @param _amount Amount to stake
    */  
   function stake(uint256 _amount) external {
+    require(!PAUSE_STAKING, 'STAKING_PAUSED');
     require(_amount != 0, 'INVALID_ZERO_AMOUNT');
     require(DEPOSIT_TOKEN_ADDR != address(0), 'INVALID_DEPOSIT_TOKEN_ADDR');
     require(BAL_REWARD_POOL != address(0), 'INVALID_BAL_REWARD_POOL');

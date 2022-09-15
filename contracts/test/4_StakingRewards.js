@@ -89,6 +89,9 @@ describe("BasicStakeUnstake", function () {
       await expect(stakingRewardsContract.connect(userA)
         .changeBalOperationVault(userB.address))
         .to.be.revertedWith('ONLY_OPERATOR');
+      await expect(stakingRewardsContract.connect(userA)
+        .changePauseStaking(true))
+        .to.be.revertedWith('ONLY_OPERATOR');
     });
 
     it("Should configDepositTokenAndBalRewardPool update depositToken and BalRewardPool", async function () {
@@ -255,6 +258,9 @@ describe("BasicStakeUnstake", function () {
       const stakeAmount = 2;
       const withdrawAmount = 1; // withdraw half of stakeAmount, twice for this test
 
+      // config emissionPerSec
+      await stakingRewardsContract.connect(operator).configEmissionPerSecond(1000);
+
       // invalid zero amount
       await expect(stakingRewardsContract.connect(userA)
         .stake(0))
@@ -301,6 +307,17 @@ describe("BasicStakeUnstake", function () {
       // and balance of staked user should be same as stakeAmount
       expect(await stakingRewardsContract.stakedTokenBalance(userA.address))
         .to.be.equal(stakeAmount);
+
+      // only operator can change pause staking
+      await stakingRewardsContract.connect(operator).changePauseStaking(true);
+
+      // pause staking should be true after change
+      expect((await stakingRewardsContract.PAUSE_STAKING()).toString())
+        .to.be.equal("true");
+
+      // stake should be paused
+      await expect(stakingRewardsContract.connect(userA).stake(stakeAmount))
+        .to.be.revertedWith('STAKING_PAUSED');
 
       // ========== claim ==========
            

@@ -10,3 +10,4 @@ contracts/coverage.json
 contracts/typechain
 contracts/cache
 contracts/artifacts
+contracts/scripts
